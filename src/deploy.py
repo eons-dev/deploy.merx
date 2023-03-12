@@ -1,6 +1,7 @@
 import os
 import logging
 import shutil
+import eons
 from glob import glob
 from pathlib import Path
 from emi import Merx, Epitome
@@ -11,6 +12,10 @@ class deploy(Merx):
 
         this.transactionSucceeded = True
         this.rollbackSucceeded = False
+
+    @eons.recoverable
+    def EvaluateLine(this, line):
+        return eval(f"f\"{line[:-1]}\"") + "\n"
 
     # Required Merx method. See that class for details.
     def Transaction(this):
@@ -27,7 +32,7 @@ class deploy(Merx):
                 iFile = open(Path(file), 'r')
                 for line in iFile:
                     try:
-                        compiledOutput.write(eval(f"f\"{line[:-1]}\"") + "\n")
+                        compiledOutput.write(this.EvaluateLine(line))
                     except Exception as e:
                         logging.error(str(e))
                 iFile.close()
