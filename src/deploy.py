@@ -10,6 +10,8 @@ class deploy(Merx):
     def __init__(this, name="Deploy"):
         super().__init__(name)
 
+        this.optionalKWArgs["namespace"] = None
+
         this.transactionSucceeded = True
         this.rollbackSucceeded = False
 
@@ -23,7 +25,7 @@ class deploy(Merx):
             logging.debug(f"Compiling {tome}...")
             epitome = this.GetTome(tome, tomeType="deployment")
 
-            compiledOutputPath = this.executor.library.joinpath("deployment").joinpath(tome).joinpath(f"tome.compiled.yaml")
+            compiledOutputPath = this.executor.library.joinpath("deployment").joinpath(tome).joinpath(f"{tome}.compiled.yaml")
             epitome.installed_at = str(compiledOutputPath)
             compiledOutput = this.CreateFile(compiledOutputPath)
 
@@ -41,8 +43,12 @@ class deploy(Merx):
             compiledOutput.close()
 
             logging.debug(f"Compiled as {compiledOutputPath}.")
+
+            namespace = str(tome)
+            if (this.namespace):
+                namespace = this.namespace
     
-            this.RunCommand(f"kubectl apply -f {epitome.installed_at}")
+            this.RunCommand(f"kubectl apply -f {epitome.installed_at} --namespace={namespace}")
         
             this.catalog.add(epitome)
 
