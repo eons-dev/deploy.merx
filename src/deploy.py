@@ -48,7 +48,7 @@ class deploy(Merx):
             if (this.namespace):
                 namespace = this.namespace
     
-            this.RunCommand(f"kubectl apply -f {epitome.installed_at} --namespace={namespace}")
+            # this.RunCommand(f"kubectl apply -f {epitome.installed_at} --namespace={namespace} -v=5")
         
             this.catalog.add(epitome)
 
@@ -67,7 +67,11 @@ class deploy(Merx):
                 #Uh oh... let's keep going and try to do what we can..
                 continue
 
-            this.RunCommand(f"kubectl delete -f {epitome.installed_at}")
+            namespace = str(tome)
+            if (this.namespace):
+                namespace = this.namespace
+
+            # this.RunCommand(f"kubectl delete -f {epitome.installed_at} --namespace={namespace} -v=5")
 
         super().Rollback()
 
